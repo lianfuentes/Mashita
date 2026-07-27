@@ -539,12 +539,15 @@
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Procesando…';
 
+    // Nota: se inserta SIN pedir la fila de vuelta (.select()) a propósito — el cliente
+    // anónimo solo tiene permiso de INSERT en "bookings", no de lectura (así ningún
+    // visitante puede ver las reservas de otros). El recibo local se arma con los
+    // datos que ya tenemos en el navegador.
     let saved = { ...bookingPayload, id: 'local-' + Date.now(), created_at: new Date().toISOString() };
     try {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabaseClient.from('bookings').insert(bookingPayload).select().single();
+        const { error } = await supabaseClient.from('bookings').insert(bookingPayload);
         if (error) throw error;
-        saved = data;
       }
       saveMyBooking(saved);
       renderFinal(saved);

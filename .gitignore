@@ -1,3 +1,7 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Fotos originales sin procesar (contienen a otras personas / son solo material de trabajo)
+assets/20260530_151732.jpg
+assets/20250824_133542.jpg
