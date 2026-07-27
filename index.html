@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mashita Barber — Cortes modernos, actitud urbana</title>
+<meta name="description" content="Barbería especializada en cortes modernos, fades y diseños freestyle para público joven. Reserva tu hora online.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💈</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="navbar__inner container">
+    <a href="#inicio" class="brand">
+      <span class="brand__mark">💈</span>
+      <span class="brand__text">MASHITA<span class="brand__accent">.</span>BARBER</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#inicio">Inicio</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#galeria">Galería</a>
+      <a href="#barbero">El Barbero</a>
+      <a href="#contacto">Contacto</a>
+      <a href="#" class="btn btn--ghost" id="misReservasBtn">Mis reservas</a>
+    </nav>
+    <button class="btn btn--accent nav-cta" id="openBookingNav">Reservar hora</button>
+    <button class="burger" id="burgerBtn" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero__glow"></div>
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <p class="eyebrow">Barbería urbana · Providencia, Santiago</p>
+      <h1 class="hero__title">CORTES QUE<br>HABLAN <span class="text-accent">POR TI</span></h1>
+      <p class="hero__subtitle">Fades, diseños freestyle y estilo para la nueva generación. Nada de esperar en la puerta: reserva tu hora online en menos de un minuto.</p>
+      <div class="hero__actions">
+        <button class="btn btn--accent btn--lg" id="openBookingHero">✂️ Reservar mi hora</button>
+        <a href="#servicios" class="btn btn--outline btn--lg">Ver servicios</a>
+      </div>
+      <div class="hero__stats">
+        <div><strong>+8</strong><span>años de oficio</span></div>
+        <div><strong>4.9★</strong><span>rating clientes</span></div>
+        <div><strong>+3.000</strong><span>cortes realizados</span></div>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <div class="hero__card hero__card--main">
+        <div class="hero__photo">
+          <img class="photo-real" src="https://images.unsplash.com/photo-1630827020718-3433092696e7?w=900&q=80&auto=format&fit=crop" alt="Fade y barba perfilada, corte realizado en Mashita Barber" loading="lazy">
+        </div>
+        <div class="hero__badge">📍 Abierto ahora</div>
+      </div>
+      <div class="hero__card hero__card--float hero__card--1">🔥 Fade Skin</div>
+      <div class="hero__card hero__card--float hero__card--2">⚡ Diseño Freestyle</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee"><div class="marquee__track">
+  <span>FADES</span><span>·</span><span>DISEÑOS FREESTYLE</span><span>·</span><span>BARBA</span><span>·</span><span>COLOR</span><span>·</span>
+  <span>FADES</span><span>·</span><span>DISEÑOS FREESTYLE</span><span>·</span><span>BARBA</span><span>·</span><span>COLOR</span><span>·</span>
+</div></div>
+
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+  <div class="container">
+    <p class="eyebrow eyebrow--center">Nuestros servicios</p>
+    <h2 class="section__title">Elige tu estilo</h2>
+    <div class="services-grid" id="servicesGrid"></div>
+  </div>
+</section>
+
+<!-- GALERIA -->
+<section class="section section--dark" id="galeria">
+  <div class="container">
+    <p class="eyebrow eyebrow--center">Trabajos recientes</p>
+    <h2 class="section__title">Galería</h2>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- BARBERO -->
+<section class="section" id="barbero">
+  <div class="container barbero-grid">
+    <div class="barbero-photo">
+      <img class="photo-real" src="https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=900&q=80&auto=format&fit=crop" alt="Foto de Mashita, barbero especialista en fades y diseños freestyle" loading="lazy">
+    </div>
+    <div class="barbero-info">
+      <p class="eyebrow">Tu barbero</p>
+      <h2 class="section__title section__title--left">Mashita</h2>
+      <p class="barbero-bio">Especialista en fades de piel, diseños freestyle y estilos urbanos. Más de 8 años perfeccionando el oficio, formado en técnicas de barbering moderno y siempre al día con las tendencias que se ven en redes.</p>
+      <ul class="barbero-tags">
+        <li>#SkinFade</li><li>#DiseñoFreestyle</li><li>#BarbaPerfilada</li><li>#EstiloUrbano</li>
+      </ul>
+      <div class="barbero-social">
+        <a href="#" onclick="return false;">📸 @mashita.barber</a>
+        <a href="#" onclick="return false;">🎵 @mashita.barber</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="section section--dark">
+  <div class="container">
+    <p class="eyebrow eyebrow--center">Lo que dicen</p>
+    <h2 class="section__title">Clientes conformes</h2>
+    <div class="testimonial-grid" id="testimonialGrid"></div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="container cta-banner__inner">
+    <h2>¿Listo para tu próximo corte?</h2>
+    <button class="btn btn--accent btn--lg" id="openBookingCta">Reservar hora ahora</button>
+  </div>
+</section>
+
+<!-- CONTACTO / FOOTER -->
+<footer class="footer" id="contacto">
+  <div class="container footer__grid">
+    <div>
+      <a href="#inicio" class="brand"><span class="brand__mark">💈</span><span class="brand__text">MASHITA<span class="brand__accent">.</span>BARBER</span></a>
+      <p class="footer__desc">Barbería especializada en cortes modernos para público joven.</p>
+    </div>
+    <div>
+      <h4>Horario</h4>
+      <p>Martes a Sábado<br>10:00 — 19:00</p>
+      <p>Domingo y Lunes cerrado</p>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <p>📍 Av. Providencia 1234, Santiago</p>
+      <p>📱 WhatsApp +56 9 1234 5678</p>
+      <p>✉️ hola@mashitabarber.cl</p>
+    </div>
+    <div>
+      <h4>Síguenos</h4>
+      <p>Instagram · TikTok · WhatsApp</p>
+    </div>
+  </div>
+  <div class="footer__bottom container">
+    <span>© 2026 Mashita Barber. Todos los derechos reservados.</span>
+  </div>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Reservar hora">
+    <button class="modal__close" id="closeBooking" aria-label="Cerrar">✕</button>
+
+    <div class="wizard">
+      <div class="wizard__steps" id="wizardSteps">
+        <div class="wizard__step is-active" data-step="1"><span>1</span>Servicio</div>
+        <div class="wizard__step" data-step="2"><span>2</span>Fecha</div>
+        <div class="wizard__step" data-step="3"><span>3</span>Tus datos</div>
+        <div class="wizard__step" data-step="4"><span>4</span>Pago</div>
+        <div class="wizard__step" data-step="5"><span>5</span>Listo</div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="wizard__panel is-active" data-panel="1">
+        <h3 class="wizard__title">¿Qué te vas a hacer?</h3>
+        <div class="option-grid" id="serviceOptions"></div>
+        <div class="wizard__nav">
+          <span></span>
+          <button class="btn btn--accent" id="toStep2" disabled>Continuar →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="wizard__panel" data-panel="2">
+        <h3 class="wizard__title">Elige fecha y hora</h3>
+        <div class="calendar" id="calendarWrap"></div>
+        <div class="slots" id="slotsWrap"></div>
+        <div class="wizard__nav">
+          <button class="btn btn--outline" data-back="1">← Volver</button>
+          <button class="btn btn--accent" id="toStep3" disabled>Continuar →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="wizard__panel" data-panel="3">
+        <h3 class="wizard__title">Tus datos de contacto</h3>
+        <form class="form-grid" id="contactForm">
+          <label>Nombre completo
+            <input type="text" name="name" required placeholder="Ej: Camila Rojas">
+          </label>
+          <label>Teléfono (WhatsApp)
+            <input type="tel" name="phone" required placeholder="+56 9 1234 5678">
+          </label>
+          <label>Email
+            <input type="email" name="email" required placeholder="tucorreo@ejemplo.com">
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" name="reminder" checked>
+            Enviarme recordatorios por WhatsApp/SMS (24h y 2h antes)
+          </label>
+          <label class="span-2">Notas para tu barbero (opcional)
+            <textarea name="notes" rows="2" placeholder="Ej: quiero el mismo fade de la última vez"></textarea>
+          </label>
+        </form>
+        <div class="wizard__nav">
+          <button class="btn btn--outline" data-back="2">← Volver</button>
+          <button class="btn btn--accent" id="toStep4">Continuar →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="wizard__panel" data-panel="4">
+        <h3 class="wizard__title">Pago</h3>
+        <p class="demo-badge">⚠️ Modo demostración — no se realizan cobros reales</p>
+
+        <div class="summary-box" id="paySummary"></div>
+
+        <div class="pay-toggle">
+          <label class="pay-option"><input type="radio" name="payMode" value="full" checked> Pagar 100% ahora</label>
+          <label class="pay-option"><input type="radio" name="payMode" value="deposit"> Pagar abono 30%</label>
+        </div>
+
+        <div class="pay-methods">
+          <button class="method-btn is-active" data-method="card">💳 Tarjeta</button>
+          <button class="method-btn" data-method="transfer">🏦 Transferencia</button>
+        </div>
+
+        <div class="pay-panel" data-pay="card">
+          <form class="form-grid" id="cardForm">
+            <label class="span-2">Nombre del titular
+              <input type="text" name="cardName" placeholder="Como aparece en la tarjeta">
+            </label>
+            <label class="span-2">Número de tarjeta
+              <input type="text" name="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric">
+            </label>
+            <label>Vencimiento
+              <input type="text" name="cardExpiry" placeholder="MM/AA" maxlength="5" inputmode="numeric">
+            </label>
+            <label>CVV
+              <input type="text" name="cardCvv" placeholder="123" maxlength="4" inputmode="numeric">
+            </label>
+          </form>
+        </div>
+
+        <div class="pay-panel" data-pay="transfer" style="display:none">
+          <div class="transfer-box">
+            <p><strong>Banco:</strong> Banco Estado</p>
+            <p><strong>Tipo de cuenta:</strong> Cuenta Corriente</p>
+            <p><strong>N° de cuenta:</strong> 123-4567-8900</p>
+            <p><strong>Titular:</strong> Mashita Barber SpA</p>
+            <p><strong>RUT:</strong> 77.111.222-3</p>
+            <p><strong>Email confirmación:</strong> pagos@mashitabarber.cl</p>
+            <button class="btn btn--outline btn--sm" type="button" id="copyTransfer">📋 Copiar datos</button>
+          </div>
+          <label class="upload-row">
+            Sube tu comprobante de transferencia (opcional)
+            <input type="file" id="comprobanteInput">
+          </label>
+          <p class="hint">Tu hora quedará "pendiente de confirmación" hasta validar el pago.</p>
+        </div>
+
+        <div class="wizard__nav">
+          <button class="btn btn--outline" data-back="3">← Volver</button>
+          <button class="btn btn--accent" id="confirmPay">Confirmar y pagar →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="wizard__panel" data-panel="5">
+        <div class="success-box">
+          <div class="success-check">✓</div>
+          <h3 class="wizard__title">¡Hora confirmada!</h3>
+          <div class="summary-box" id="finalSummary"></div>
+          <div class="reminder-list" id="reminderList"></div>
+          <div class="final-actions">
+            <button class="btn btn--outline" id="downloadIcs">📅 Agregar a mi calendario</button>
+            <button class="btn btn--accent" id="closeWizardDone">Listo</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MIS RESERVAS MODAL -->
+<div class="modal-overlay" id="reservasOverlay">
+  <div class="modal modal--sm" role="dialog" aria-modal="true" aria-label="Mis reservas">
+    <button class="modal__close" id="closeReservas" aria-label="Cerrar">✕</button>
+    <h3 class="wizard__title">Mis reservas</h3>
+    <p class="hint">Guardadas en este dispositivo/navegador.</p>
+    <div id="reservasList" class="reservas-list"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
