@@ -88,11 +88,12 @@
 
   let dashboardInitialized = false;
   function initDashboard() {
-    if (dashboardInitialized) { loadSchedule(); loadBlockedDates(); loadBookings(); loadPhotosTab(); return; }
+    if (dashboardInitialized) { loadSchedule(); loadBlockedDates(); loadBookings(); loadServicesEditList(); loadBarberPhoto(); return; }
     dashboardInitialized = true;
     initTabs();
     initScheduleTab();
     initBookingsTab();
+    initServicesTab();
     initPhotosTab();
   }
 
@@ -273,7 +274,7 @@
     });
   }
 
-  /* ------------------------------- FOTOS ------------------------------- */
+  /* ------------------------------- Fotos (helper compartido) ------------------------------- */
 
   async function uploadPhoto(file, pathPrefix) {
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
@@ -284,8 +285,10 @@
     return data.publicUrl;
   }
 
+  /* ------------------------------- FOTOS (barbero) ------------------------------- */
+
   function initPhotosTab() {
-    loadPhotosTab();
+    loadBarberPhoto();
 
     $('#barberPhotoInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
@@ -304,27 +307,98 @@
     });
   }
 
-  async function loadPhotosTab() {
-    const { data: settings, error: settingsError } = await supabaseClient.from('settings').select('*').eq('id', 1).single();
-    if (!settingsError && settings) $('#barberPhotoPreview').src = settings.barber_photo_url || '';
+  async function loadBarberPhoto() {
+    const { data: settings, error } = await supabaseClient.from('settings').select('*').eq('id', 1).single();
+    if (!error && settings) $('#barberPhotoPreview').src = settings.barber_photo_url || '';
+  }
 
-    const grid = $('#servicesPhotoGrid');
-    const { data: services, error } = await supabaseClient.from('services').select('*').order('sort_order', { ascending: true });
-    if (error) { grid.innerHTML = `<p class="admin-list-empty">Error: ${error.message}</p>`; return; }
+  /* ------------------------------- SERVICIOS ------------------------------- */
 
-    grid.innerHTML = services.map(s => `
-      <div class="admin-service-photo-card" data-id="${s.id}">
-        <img src="${s.photo_url || ''}" alt="${s.name}" onerror="this.style.opacity=0">
-        <h4>${s.icon || ''} ${s.name}</h4>
-        <label class="btn btn--outline btn--sm admin-upload-btn">
-          Cambiar foto
-          <input type="file" accept="image/*" hidden>
-        </label>
+  function stripDiacritics(str) {
+    // quita tildes/acentos: normaliza a NFD (letra + marca de acento separadas) y descarta las marcas (rango Unicode 0x0300-0x036F)
+    return str.normalize('NFD').split('').filter(ch => {
+      const code = ch.codePointAt(0);
+      return code < 0x0300 || code > 0x036f;
+    }).join('');
+  }
+
+  function slugify(name) {
+    const base = stripDiacritics((name || '').toLowerCase())
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-+|-+$)/g, '');
+    return base || 'servicio';
+  }
+
+  function initServicesTab() {
+    loadServicesEditList();
+
+    $('#newServiceForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+
+      const { data: existing } = await supabaseClient.from('services').select('id, sort_order').order('sort_order', { ascending: false }).limit(1);
+      const { data: allIds } = await supabaseClient.from('services').select('id');
+      const existingIds = new Set((allIds || []).map(s => s.id));
+
+      let id = slugify(fd.get('name'));
+      let suffix = 2;
+      while (existingIds.has(id)) { id = `${slugify(fd.get('name'))}-${suffix}`; suffix++; }
+
+      const nextSortOrder = existing && existing.length ? existing[0].sort_order + 1 : 1;
+
+      const { error } = await supabaseClient.from('services').insert({
+        id,
+        name: fd.get('name'),
+        description: fd.get('description'),
+        price: Number(fd.get('price')),
+        duration: Number(fd.get('duration')),
+        icon: fd.get('icon') || '💈',
+        sort_order: nextSortOrder,
+      });
+      if (error) { toast('Error al crear servicio: ' + error.message); return; }
+      e.target.reset();
+      loadServicesEditList();
+      toast('✅ Servicio agregado');
+    });
+  }
+
+  async function loadServicesEditList() {
+    const list = $('#servicesEditList');
+    if (!list) return;
+    const { data, error } = await supabaseClient.from('services').select('*').order('sort_order', { ascending: true });
+    if (error) { list.innerHTML = `<p class="admin-list-empty">Error: ${error.message}</p>`; return; }
+    if (!data.length) { list.innerHTML = `<p class="admin-list-empty">No hay servicios todavía.</p>`; return; }
+
+    list.innerHTML = data.map(s => `
+      <div class="admin-list-item service-edit-card" data-id="${s.id}">
+        <div class="service-edit-card__photo">
+          <img src="${s.photo_url || ''}" alt="${s.name}" onerror="this.style.opacity=0">
+          <label class="btn btn--outline btn--sm admin-upload-btn">
+            Cambiar foto
+            <input type="file" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="service-edit-card__fields">
+          <div class="admin-form-row">
+            <label>Nombre<input type="text" data-field="name" value="${s.name}"></label>
+            <label>Ícono<input type="text" data-field="icon" value="${s.icon || ''}" maxlength="4"></label>
+          </div>
+          <label>Descripción<textarea data-field="description" rows="2">${s.description}</textarea></label>
+          <div class="admin-form-row">
+            <label>Precio (CLP)<input type="number" data-field="price" value="${s.price}" min="0" step="500"></label>
+            <label>Duración (min)<input type="number" data-field="duration" value="${s.duration}" min="5" step="5"></label>
+          </div>
+          <div class="service-edit-card__actions">
+            <button class="btn btn--accent btn--sm" data-save>💾 Guardar cambios</button>
+            <button class="btn btn--outline btn--sm" data-delete>🗑️ Eliminar</button>
+          </div>
+        </div>
       </div>
     `).join('');
 
-    $$('.admin-service-photo-card', grid).forEach(card => {
+    $$('.service-edit-card', list).forEach(card => {
       const id = card.dataset.id;
+
       $('input[type=file]', card).addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -340,6 +414,26 @@
           toast('Error al subir la foto: ' + err.message);
         }
         e.target.value = '';
+      });
+
+      $('[data-save]', card).addEventListener('click', async () => {
+        const payload = {
+          name: $('[data-field="name"]', card).value,
+          icon: $('[data-field="icon"]', card).value,
+          description: $('[data-field="description"]', card).value,
+          price: Number($('[data-field="price"]', card).value),
+          duration: Number($('[data-field="duration"]', card).value),
+        };
+        const { error } = await supabaseClient.from('services').update(payload).eq('id', id);
+        if (error) { toast('Error al guardar: ' + error.message); return; }
+        toast('✅ Servicio actualizado');
+      });
+
+      $('[data-delete]', card).addEventListener('click', async () => {
+        if (!confirm('¿Eliminar este servicio? Esta acción no se puede deshacer.')) return;
+        const { error } = await supabaseClient.from('services').delete().eq('id', id);
+        if (error) { toast('Error al eliminar: ' + error.message); return; }
+        loadServicesEditList();
       });
     });
   }

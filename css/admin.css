@@ -72,10 +72,19 @@
 /* Fotos */
 .admin-photo-uploader{display:flex;align-items:center;gap:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;}
 .admin-photo-preview{width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--surface-2);flex-shrink:0;}
-.admin-services-photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;}
-.admin-service-photo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;text-align:center;}
-.admin-service-photo-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;margin-bottom:.8rem;background:var(--surface-2);}
-.admin-service-photo-card h4{margin:.2rem 0 .8rem;font-size:.95rem;}
+
+/* Servicios (crear/editar) */
+.service-edit-card{display:grid;grid-template-columns:140px 1fr;gap:1.3rem;}
+.service-edit-card__photo{text-align:center;}
+.service-edit-card__photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin-bottom:.7rem;background:var(--surface-2);}
+.service-edit-card__fields{display:flex;flex-direction:column;gap:.9rem;}
+.service-edit-card__fields .admin-form-row{margin-bottom:0;}
+.service-edit-card__actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+
+@media (max-width: 640px){
+  .service-edit-card{grid-template-columns:1fr;}
+  .service-edit-card__photo img{aspect-ratio:16/10;}
+}
 
 @media (max-width: 640px){
   .admin-form-row{grid-template-columns:1fr;}

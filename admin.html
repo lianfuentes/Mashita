@@ -62,6 +62,7 @@
   <nav class="admin-tabs container">
     <button class="admin-tab is-active" data-tab="horarios">🗓️ Horarios</button>
     <button class="admin-tab" data-tab="reservas">📋 Reservas</button>
+    <button class="admin-tab" data-tab="servicios">✂️ Servicios</button>
     <button class="admin-tab" data-tab="fotos">🖼️ Fotos</button>
   </nav>
 
@@ -107,6 +108,36 @@
       <div id="bookingsList" class="admin-list"></div>
     </section>
 
+    <!-- SERVICIOS -->
+    <section class="admin-panel" data-panel="servicios">
+      <h2 class="admin-section-title">Agregar nuevo servicio</h2>
+      <form id="newServiceForm" class="admin-form">
+        <div class="admin-form-row">
+          <label>Nombre
+            <input type="text" name="name" required placeholder="Ej: Corte Clásico">
+          </label>
+          <label>Ícono (emoji, opcional)
+            <input type="text" name="icon" maxlength="4" placeholder="✂️">
+          </label>
+        </div>
+        <label>Descripción
+          <textarea name="description" rows="2" required placeholder="Describe el servicio…"></textarea>
+        </label>
+        <div class="admin-form-row">
+          <label>Precio (CLP)
+            <input type="number" name="price" min="0" step="500" required placeholder="12000">
+          </label>
+          <label>Duración (minutos)
+            <input type="number" name="duration" min="5" step="5" required placeholder="30">
+          </label>
+        </div>
+        <button type="submit" class="btn btn--accent">+ Agregar servicio</button>
+      </form>
+
+      <h2 class="admin-section-title">Servicios existentes</h2>
+      <div id="servicesEditList" class="admin-list"></div>
+    </section>
+
     <!-- FOTOS -->
     <section class="admin-panel" data-panel="fotos">
       <h2 class="admin-section-title">Foto del barbero</h2>
@@ -117,9 +148,6 @@
           <input type="file" id="barberPhotoInput" accept="image/*" hidden>
         </label>
       </div>
-
-      <h2 class="admin-section-title">Fotos de servicios</h2>
-      <div id="servicesPhotoGrid" class="admin-services-photo-grid"></div>
     </section>
 
   </main>

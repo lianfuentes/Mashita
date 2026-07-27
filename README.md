@@ -82,9 +82,11 @@ Requiere iniciar sesión con el usuario que creaste en Supabase (ver
   navegador), con su estado de pago y de la reserva editables, botón de
   eliminar, y botones de **WhatsApp** (confirmación, recordatorio o mensaje
   libre) que abren WhatsApp con el mensaje ya escrito, listo para enviar.
-- **🖼️ Fotos**: subir/reemplazar la foto del barbero y la foto de cada
-  servicio — quedan alojadas en Supabase Storage y se ven al instante en el
-  sitio público.
+- **✂️ Servicios**: crear servicios nuevos (nombre, ícono, descripción,
+  precio, duración), editar los existentes o eliminarlos, y subir la foto de
+  cada uno — se reflejan al instante en el sitio público.
+- **🖼️ Fotos**: subir/reemplazar la foto del barbero — queda alojada en
+  Supabase Storage y se ve al instante en el sitio público.
 
 ## Qué es real y qué es demostración
 
