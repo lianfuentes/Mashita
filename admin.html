@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de administración — Mashita Barber</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💈</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- NO CONFIGURADO -->
+<div id="notConfiguredScreen" class="admin-center-screen" style="display:none">
+  <div class="admin-card">
+    <h1>⚠️ Supabase no está configurado</h1>
+    <p>Completa <code>js/config.js</code> con la URL y la anon key de tu proyecto de Supabase, y corre <code>supabase/schema.sql</code> en el SQL Editor. Revisa <code>SETUP-SUPABASE.md</code> para la guía paso a paso.</p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="admin-center-screen">
+  <div class="admin-card">
+    <div class="admin-login-brand">
+      <span class="brand__mark">💈</span>
+      <span class="brand__text">MASHITA<span class="brand__accent">.</span>BARBER</span>
+    </div>
+    <h1>Panel de administración</h1>
+    <form id="loginForm">
+      <label>Email
+        <input type="email" name="email" required placeholder="admin@mashitabarber.cl">
+      </label>
+      <label>Contraseña
+        <input type="password" name="password" required placeholder="••••••••">
+      </label>
+      <p id="loginError" class="admin-error" style="display:none"></p>
+      <button type="submit" class="btn btn--accent btn--lg" style="width:100%">Ingresar</button>
+    </form>
+    <a href="index.html" class="admin-back-link">← Volver al sitio</a>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="admin-dashboard" style="display:none">
+  <header class="admin-topbar">
+    <div class="brand">
+      <span class="brand__mark">💈</span>
+      <span class="brand__text">MASHITA<span class="brand__accent">.</span>BARBER</span>
+      <span class="admin-topbar__tag">Admin</span>
+    </div>
+    <div class="admin-topbar__actions">
+      <a href="index.html" class="btn btn--ghost btn--sm">Ver sitio</a>
+      <button id="logoutBtn" class="btn btn--outline btn--sm">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <nav class="admin-tabs container">
+    <button class="admin-tab is-active" data-tab="horarios">🗓️ Horarios</button>
+    <button class="admin-tab" data-tab="reservas">📋 Reservas</button>
+    <button class="admin-tab" data-tab="fotos">🖼️ Fotos</button>
+  </nav>
+
+  <main class="container admin-main">
+
+    <!-- HORARIOS -->
+    <section class="admin-panel is-active" data-panel="horarios">
+      <h2 class="admin-section-title">Horario de atención</h2>
+      <form id="scheduleForm" class="admin-form">
+        <div class="admin-form-row">
+          <label>Hora de apertura
+            <input type="number" name="startHour" min="0" max="23" required>
+          </label>
+          <label>Hora de cierre
+            <input type="number" name="endHour" min="1" max="24" required>
+          </label>
+        </div>
+        <label class="admin-form-label-block">Días cerrados</label>
+        <div class="admin-days-grid" id="closedDaysGrid"></div>
+        <button type="submit" class="btn btn--accent">Guardar horario</button>
+      </form>
+
+      <h2 class="admin-section-title">Días puntuales bloqueados</h2>
+      <p class="hint">Feriados o vacaciones específicas, además del horario semanal de arriba.</p>
+      <form id="blockedDateForm" class="admin-form admin-form--inline">
+        <input type="date" name="date" required>
+        <input type="text" name="reason" placeholder="Motivo (opcional)">
+        <button type="submit" class="btn btn--outline btn--sm">+ Agregar</button>
+      </form>
+      <div id="blockedDatesList" class="admin-list"></div>
+    </section>
+
+    <!-- RESERVAS -->
+    <section class="admin-panel" data-panel="reservas">
+      <div class="admin-section-head">
+        <h2 class="admin-section-title">Reservas</h2>
+        <select id="bookingsFilter" class="admin-select">
+          <option value="upcoming">Próximas</option>
+          <option value="all">Todas</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+      </div>
+      <div id="bookingsList" class="admin-list"></div>
+    </section>
+
+    <!-- FOTOS -->
+    <section class="admin-panel" data-panel="fotos">
+      <h2 class="admin-section-title">Foto del barbero</h2>
+      <div class="admin-photo-uploader">
+        <img id="barberPhotoPreview" class="admin-photo-preview" alt="Foto actual del barbero">
+        <label class="btn btn--outline btn--sm admin-upload-btn">
+          Cambiar foto
+          <input type="file" id="barberPhotoInput" accept="image/*" hidden>
+        </label>
+      </div>
+
+      <h2 class="admin-section-title">Fotos de servicios</h2>
+      <div id="servicesPhotoGrid" class="admin-services-photo-grid"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

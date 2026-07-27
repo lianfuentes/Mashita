@@ -101,8 +101,10 @@ a{color:inherit;text-decoration:none;}
 
 /* Services */
 .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;}
-.service-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;transition:transform .2s, border-color .2s;}
+.service-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;transition:transform .2s, border-color .2s;overflow:hidden;}
 .service-card:hover{transform:translateY(-6px);border-color:var(--accent);}
+.service-card__photo{margin:-1.8rem -1.8rem 1.2rem;aspect-ratio:16/10;overflow:hidden;}
+.service-card__photo img{width:100%;height:100%;object-fit:cover;}
 .service-card__icon{font-size:2rem;margin-bottom:.8rem;}
 .service-card h3{margin:.2rem 0;font-size:1.15rem;}
 .service-card p{color:var(--text-dim);font-size:.9rem;min-height:2.6em;}
@@ -151,7 +153,9 @@ a{color:inherit;text-decoration:none;}
 .footer h4{margin:0 0 .8rem;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;color:var(--accent);}
 .footer p{color:var(--text-dim);font-size:.9rem;margin:.3rem 0;}
 .footer__desc{max-width:260px;margin-top:.8rem;}
-.footer__bottom{border-top:1px solid var(--border);padding-top:1.5rem;color:var(--text-dim);font-size:.8rem;}
+.footer__bottom{border-top:1px solid var(--border);padding-top:1.5rem;color:var(--text-dim);font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+.footer__admin-link{color:var(--text-dim);font-size:.75rem;opacity:.5;transition:opacity .15s;}
+.footer__admin-link:hover{opacity:1;color:var(--accent);}
 
 /* Toasts */
 .toast-container{position:fixed;bottom:1.2rem;right:1.2rem;z-index:1000;display:flex;flex-direction:column;gap:.6rem;}

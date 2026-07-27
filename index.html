@@ -57,7 +57,7 @@
     <div class="hero__visual">
       <div class="hero__card hero__card--main">
         <div class="hero__photo">
-          <img class="photo-real" src="https://images.unsplash.com/photo-1630827020718-3433092696e7?w=900&q=80&auto=format&fit=crop" alt="Fade y barba perfilada, corte realizado en Mashita Barber" loading="lazy">
+          <img id="heroPhotoImg" class="photo-real" src="https://images.unsplash.com/photo-1630827020718-3433092696e7?w=900&q=80&auto=format&fit=crop" alt="Fade y barba perfilada, corte realizado en Mashita Barber" loading="lazy">
         </div>
         <div class="hero__badge">📍 Abierto ahora</div>
       </div>
@@ -95,13 +95,13 @@
 <section class="section" id="barbero">
   <div class="container barbero-grid">
     <div class="barbero-photo">
-      <img class="photo-real" src="https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=900&q=80&auto=format&fit=crop" alt="Foto de Mashita, barbero especialista en fades y diseños freestyle" loading="lazy">
+      <img id="barberoPhotoImg" class="photo-real" src="https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=900&q=80&auto=format&fit=crop" alt="Foto del barbero" loading="lazy">
     </div>
     <div class="barbero-info">
       <p class="eyebrow">Tu barbero</p>
-      <h2 class="section__title section__title--left">Mashita</h2>
-      <p class="barbero-bio">Especialista en fades de piel, diseños freestyle y estilos urbanos. Más de 8 años perfeccionando el oficio, formado en técnicas de barbering moderno y siempre al día con las tendencias que se ven en redes.</p>
-      <ul class="barbero-tags">
+      <h2 class="section__title section__title--left" id="barberoName">Mashita</h2>
+      <p class="barbero-bio" id="barberoBio">Especialista en fades de piel, diseños freestyle y estilos urbanos. Más de 8 años perfeccionando el oficio, formado en técnicas de barbering moderno y siempre al día con las tendencias que se ven en redes.</p>
+      <ul class="barbero-tags" id="barberoTags">
         <li>#SkinFade</li><li>#DiseñoFreestyle</li><li>#BarbaPerfilada</li><li>#EstiloUrbano</li>
       </ul>
       <div class="barbero-social">
@@ -154,6 +154,7 @@
   </div>
   <div class="footer__bottom container">
     <span>© 2026 Mashita Barber. Todos los derechos reservados.</span>
+    <a href="admin.html" class="footer__admin-link">Admin</a>
   </div>
 </footer>
 
@@ -254,15 +255,7 @@
         </div>
 
         <div class="pay-panel" data-pay="transfer" style="display:none">
-          <div class="transfer-box">
-            <p><strong>Banco:</strong> Banco Estado</p>
-            <p><strong>Tipo de cuenta:</strong> Cuenta Corriente</p>
-            <p><strong>N° de cuenta:</strong> 123-4567-8900</p>
-            <p><strong>Titular:</strong> Mashita Barber SpA</p>
-            <p><strong>RUT:</strong> 77.111.222-3</p>
-            <p><strong>Email confirmación:</strong> pagos@mashitabarber.cl</p>
-            <button class="btn btn--outline btn--sm" type="button" id="copyTransfer">📋 Copiar datos</button>
-          </div>
+          <div class="transfer-box" id="transferBox"></div>
           <label class="upload-row">
             Sube tu comprobante de transferencia (opcional)
             <input type="file" id="comprobanteInput">
@@ -304,6 +297,9 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/supabase-client.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>

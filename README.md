@@ -1,21 +1,43 @@
-# Mashita Barber — Sitio web + reservas online
+# Mashita Barber — Sitio web + reservas + panel de administración
 
-Sitio web estático (HTML/CSS/JS puro, sin frameworks ni build) para una barbería
+Sitio web (HTML/CSS/JS puro, sin frameworks ni build) para una barbería
 especializada en cortes modernos para público joven: landing con servicios,
-galería y barbero destacado, más un sistema de reserva de horas con calendario,
-recordatorios y pago (tarjeta o transferencia).
+galería y barbero destacado, sistema de reserva de horas con calendario,
+pago (tarjeta o transferencia), y un **panel de administración** para
+gestionar horarios, reservas, fotos y comunicarse con los clientes por
+WhatsApp.
+
+El backend (reservas, horarios, fotos, login del admin) corre en
+[Supabase](https://supabase.com) (gratis) — el frontend sigue siendo 100%
+estático y se despliega igual que antes (GitHub Pages, Netlify, FTP, etc.).
+
+## ⚙️ Antes de usarlo: configura Supabase
+
+**El sitio no funcionará correctamente hasta que completes este paso.**
+Sigue la guía en [`SETUP-SUPABASE.md`](SETUP-SUPABASE.md) (10-15 minutos,
+gratis, sin tarjeta). En resumen: creas un proyecto de Supabase, corres
+`supabase/schema.sql`, creas tu usuario admin, y pegas la URL + anon key en
+`js/config.js`.
+
+Mientras no lo hagas, el sitio público muestra datos de ejemplo (fallback) y
+el panel de administración muestra un aviso pidiendo completar la configuración.
 
 ## Estructura del proyecto
 
 ```
-index.html      → toda la estructura del sitio
-css/styles.css  → estilos (tema oscuro, paleta gris/plata, tipografías Anton/Space Grotesk)
-js/data.js      → servicios, testimonios, galería, horario y datos bancarios (edítalo para personalizar)
-js/app.js       → lógica: calendario de disponibilidad, wizard de reserva, pagos, recordatorios
-serve.ps1       → servidor estático mínimo en PowerShell para probar el sitio localmente
+index.html            → sitio público
+admin.html            → panel de administración (login + dashboard)
+css/styles.css        → estilos del sitio público (tema oscuro, paleta gris/plata)
+css/admin.css         → estilos del panel de administración
+js/config.js          → URL + anon key de tu proyecto Supabase (completar)
+js/supabase-client.js → inicializa el cliente de Supabase
+js/data.js            → testimonios (estáticos) + datos de fallback
+js/app.js             → lógica del sitio público: calendario, wizard de reserva, pagos
+js/admin.js           → lógica del panel: login, horarios, reservas, fotos, WhatsApp
+supabase/schema.sql   → script SQL: tablas, seguridad (RLS), datos iniciales
+serve.ps1             → servidor estático mínimo en PowerShell para probar localmente
+SETUP-SUPABASE.md     → guía paso a paso para configurar el backend
 ```
-
-Es un sitio 100% estático: no requiere Node, Python ni ningún build previo.
 
 ## Probarlo en local
 
@@ -26,10 +48,14 @@ estático mínimo en PowerShell:
 powershell -ExecutionPolicy Bypass -File serve.ps1
 ```
 
-Luego abre `http://localhost:8791/` en el navegador. (Si tienes Node o Python
-instalados, también puedes usar `npx serve` o `python -m http.server` normalmente).
+Luego abre `http://localhost:8791/` (sitio público) o
+`http://localhost:8791/admin.html` (panel de administración). (Si tienes Node
+o Python instalados, también puedes usar `npx serve` o `python -m http.server`).
 
 ## Cómo publicarlo
+
+Sigue siendo un sitio estático (Supabase se conecta desde el navegador, no
+requiere servidor propio):
 
 ### Opción A — GitHub Pages (gratis, usando este mismo repo)
 1. Ve a **Settings → Pages** en este repositorio.
@@ -37,67 +63,66 @@ instalados, también puedes usar `npx serve` o `python -m http.server` normalmen
 3. GitHub publica el sitio en `https://tuusuario.github.io/mashita-barber/`.
 
 ### Opción B — Netlify / Vercel (arrastrar y soltar)
-1. Entra a [app.netlify.com/drop](https://app.netlify.com/drop) (o Vercel → "Add New Project" → "Import Git Repository" apuntando a este repo).
-2. Listo, obtienes una URL pública en segundos. Puedes conectar tu propio dominio después.
+1. Entra a [app.netlify.com/drop](https://app.netlify.com/drop) (o Vercel → "Add New Project" → "Import Git Repository").
+2. Listo, obtienes una URL pública en segundos.
 
 ### Opción C — Hosting tradicional (cPanel / FTP)
 1. Descarga este repositorio (`Code → Download ZIP`) o clónalo.
-2. Sube `index.html`, `css/` y `js/` a `public_html/` (o `www/`) por FTP/SFTP.
-3. Asegúrate que `index.html` quede en la raíz de ese directorio.
+2. Sube todos los archivos a `public_html/` (o `www/`) por FTP/SFTP.
 
-No hay variables de entorno ni configuración de servidor que ajustar: el sitio
-funciona apenas los archivos quedan servidos por HTTP(S). `serve.ps1` es solo
-para desarrollo local, no lo necesitas en el hosting final.
+## El panel de administración (`admin.html`)
+
+Accesible también desde un link discreto "Admin" al pie del sitio público.
+Requiere iniciar sesión con el usuario que creaste en Supabase (ver
+`SETUP-SUPABASE.md` paso 3).
+
+- **🗓️ Horarios**: hora de apertura/cierre, días cerrados de la semana, y días
+  puntuales bloqueados (feriados, vacaciones).
+- **📋 Reservas**: todas las reservas de todos los clientes (no solo del mismo
+  navegador), con su estado de pago y de la reserva editables, botón de
+  eliminar, y botones de **WhatsApp** (confirmación, recordatorio o mensaje
+  libre) que abren WhatsApp con el mensaje ya escrito, listo para enviar.
+- **🖼️ Fotos**: subir/reemplazar la foto del barbero y la foto de cada
+  servicio — quedan alojadas en Supabase Storage y se ven al instante en el
+  sitio público.
 
 ## Qué es real y qué es demostración
 
-Este sitio es completamente funcional en el navegador (calendario, disponibilidad
-de horas, formulario de contacto, generación de evento `.ics` para agendar, guardado
-de reservas), pero dos partes están **simuladas** porque requieren credenciales e
-infraestructura propias del negocio:
-
 ### 💳 Pagos
-El formulario de tarjeta valida formato (Luhn, vencimiento, CVV) pero **no cobra
-dinero real** — es una simulación claramente marcada como "Modo demostración".
-La transferencia bancaria solo muestra los datos y marca la reserva como
+El formulario de tarjeta valida formato (Luhn, vencimiento, CVV) pero **no
+cobra dinero real** — es una simulación marcada como "Modo demostración". La
+transferencia bancaria solo muestra los datos y marca la reserva como
 "pendiente de confirmación".
 
-**Para cobrar de verdad** necesitas integrar una pasarela de pago con tu propia
-cuenta comerciante, por ejemplo:
-- **Transbank Webpay Plus** (la más usada en Chile para tarjeta/débito) — requiere backend.
-- **Stripe** o **MercadoPago** — alternativas con buen soporte para Latinoamérica.
+**Para cobrar de verdad** necesitas integrar una pasarela de pago con tu
+propia cuenta comerciante (Transbank Webpay Plus, Stripe o MercadoPago), lo
+que requiere un pequeño backend adicional que guarde las credenciales secretas
+y confirme el pago — no se puede hacer solo con HTML/JS en el navegador de
+forma segura.
 
-Cualquiera de estas opciones requiere un pequeño backend (Node, PHP, etc.) que
-guarde las credenciales secretas y confirme el pago — no se puede hacer solo
-con HTML/JS en el navegador de forma segura.
+### 📲 Mensajes a clientes
+Los botones de WhatsApp en el panel **sí son reales**: abren WhatsApp con el
+número del cliente y el mensaje ya escrito — el admin solo aprieta enviar. No
+son mensajes automáticos (eso requeriría una cuenta de pago con Twilio o
+WhatsApp Business API); es un envío manual asistido, gratis.
 
-### 📲 Recordatorios
-Al confirmar una reserva, la app "simula" el envío de un recordatorio por
-WhatsApp/SMS. En producción, para enviarlos de verdad necesitas:
-- Un backend con un programador de tareas (cron) que revise las reservas próximas.
-- Una API de mensajería: **WhatsApp Business Cloud API**, **Twilio** (SMS/WhatsApp)
-  o **SendGrid** (email).
+## Dónde guarda los datos
 
-## Dónde guarda los datos hoy
-
-Las reservas se guardan en el `localStorage` del navegador de cada visitante
-(clave `mashita_bookings_v1`), sin backend ni base de datos. Esto significa que:
-- Cada visitante solo ve **sus propias** reservas en "Mis reservas".
-- El barbero/dueño del local no tiene panel para ver todas las reservas de todos los clientes.
-
-**Para producción real** (que el negocio pueda ver y administrar todas las horas)
-se necesita agregar un backend con base de datos (por ejemplo, un pequeño servidor
-Node/Express + una base de datos como PostgreSQL o Supabase/Firebase), que además
-sería el que dispare pagos y recordatorios reales.
+Reservas, horarios, servicios, fotos y galería viven en la base de datos de
+Supabase (ver tabla de permisos en `SETUP-SUPABASE.md`). El navegador de cada
+cliente además guarda un recibo local de "Mis reservas" (solo las que él
+mismo hizo) en `localStorage`, únicamente como comodidad — no es la fuente de
+verdad, que es la base de datos.
 
 ## Personalizar el contenido
 
-Edita `js/data.js` para cambiar servicios, precios, horario de atención, datos
-bancarios y las fotos de la galería/testimonios. Edita las secciones de `index.html`
-para cambiar textos, nombre del barbero, dirección y redes sociales. Los colores y
-tipografía se controlan desde las variables al inicio de `css/styles.css`
-(`:root { --bg, --accent, ... }`).
+- **Servicios, horario, fotos, datos bancarios**: desde `admin.html` (fotos y
+  horario) o directamente en las tablas de Supabase (Table Editor) para
+  precios/descripciones.
+- **Testimonios, textos de la landing, colores**: en `js/data.js`,
+  `index.html` y las variables al inicio de `css/styles.css`
+  (`:root { --bg, --accent, ... }`).
 
-Las fotos actuales son de bancos de imágenes libres (Unsplash) con licencia de uso
-comercial, usadas como ilustración de ejemplo — reemplázalas por fotos reales del
-local y del barbero cuando el negocio esté operativo.
+Las fotos de ejemplo son de bancos de imágenes libres (Unsplash) con licencia
+de uso comercial — reemplázalas desde el panel de administración por fotos
+reales del local y del barbero cuando el negocio esté operativo.

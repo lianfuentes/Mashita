@@ -23,11 +23,57 @@
     setTimeout(() => el.remove(), ms || 3800);
   }
 
-  /* --------------------------- Persistencia local -------------------------- */
+  function isSupabaseConfigured() {
+    return typeof SUPABASE_URL === 'string' && !SUPABASE_URL.includes('TU-PROYECTO') && !SUPABASE_ANON_KEY.includes('TU-ANON-KEY');
+  }
 
-  const STORAGE_KEY = 'mashita_bookings_v1';
+  /* --------------------------- Datos remotos (Supabase) -------------------------- */
 
-  function getBookings() {
+  let SERVICES = [];
+  let GALLERY = [];
+  let SETTINGS = {};
+  let BLOCKED_DATES = []; // array de 'YYYY-MM-DD'
+
+  async function loadRemoteData() {
+    if (!isSupabaseConfigured()) {
+      SERVICES = FALLBACK_SERVICES;
+      GALLERY = FALLBACK_GALLERY;
+      SETTINGS = FALLBACK_SETTINGS;
+      BLOCKED_DATES = [];
+      toast('⚠️ Supabase no está configurado todavía (js/config.js). Mostrando datos de ejemplo.', 6000);
+      return;
+    }
+    try {
+      const [servicesRes, galleryRes, settingsRes, blockedRes] = await Promise.all([
+        supabaseClient.from('services').select('*').order('sort_order', { ascending: true }),
+        supabaseClient.from('gallery').select('*').order('sort_order', { ascending: true }),
+        supabaseClient.from('settings').select('*').eq('id', 1).single(),
+        supabaseClient.from('blocked_dates').select('date'),
+      ]);
+      if (servicesRes.error) throw servicesRes.error;
+      if (galleryRes.error) throw galleryRes.error;
+      if (settingsRes.error) throw settingsRes.error;
+      if (blockedRes.error) throw blockedRes.error;
+
+      SERVICES = servicesRes.data.length ? servicesRes.data : FALLBACK_SERVICES;
+      GALLERY = galleryRes.data.length ? galleryRes.data : FALLBACK_GALLERY;
+      SETTINGS = settingsRes.data || FALLBACK_SETTINGS;
+      BLOCKED_DATES = (blockedRes.data || []).map(b => b.date);
+    } catch (err) {
+      console.error('Error cargando datos de Supabase, usando datos de ejemplo:', err);
+      SERVICES = FALLBACK_SERVICES;
+      GALLERY = FALLBACK_GALLERY;
+      SETTINGS = FALLBACK_SETTINGS;
+      BLOCKED_DATES = [];
+      toast('⚠️ No se pudo conectar con Supabase. Mostrando datos de ejemplo.', 6000);
+    }
+  }
+
+  /* --------------------------- "Mis reservas" (recibos locales) -------------------------- */
+
+  const STORAGE_KEY = 'mashita_my_bookings_v1';
+
+  function getMyBookings() {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     } catch (e) {
@@ -35,8 +81,8 @@
     }
   }
 
-  function saveBooking(booking) {
-    const all = getBookings();
+  function saveMyBooking(booking) {
+    const all = getMyBookings();
     all.push(booking);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   }
@@ -47,9 +93,10 @@
     const grid = $('#servicesGrid');
     grid.innerHTML = SERVICES.map(s => `
       <div class="service-card">
-        <div class="service-card__icon">${s.icon}</div>
+        ${s.photo_url ? `<div class="service-card__photo"><img class="photo-real" src="${s.photo_url}" alt="${s.name}" loading="lazy"></div>` : ''}
+        <div class="service-card__icon">${s.icon || '💈'}</div>
         <h3>${s.name}</h3>
-        <p>${s.desc}</p>
+        <p>${s.description}</p>
         <div class="service-card__meta">
           <span class="service-card__price">${money(s.price)}</span>
           <span class="service-card__duration">${s.duration} min</span>
@@ -62,7 +109,7 @@
     const grid = $('#galleryGrid');
     grid.innerHTML = GALLERY.map(g => `
       <div class="gallery-item" data-label="${g.label}">
-        <img class="photo-real" src="${g.img}" alt="${g.label} — trabajo realizado en Mashita Barber" loading="lazy">
+        <img class="photo-real" src="${g.photo_url}" alt="${g.label} — trabajo realizado en Mashita Barber" loading="lazy">
       </div>
     `).join('');
   }
@@ -79,6 +126,41 @@
         </div>
       </div>
     `).join('');
+  }
+
+  function renderBarberProfile() {
+    const heroImg = $('#heroPhotoImg');
+    const barberoImg = $('#barberoPhotoImg');
+    if (heroImg && SETTINGS.barber_photo_url) heroImg.src = SETTINGS.barber_photo_url;
+    if (barberoImg && SETTINGS.barber_photo_url) barberoImg.src = SETTINGS.barber_photo_url;
+
+    const nameEl = $('#barberoName');
+    const bioEl = $('#barberoBio');
+    const tagsEl = $('#barberoTags');
+    if (nameEl) nameEl.textContent = SETTINGS.barber_name || 'Mashita';
+    if (bioEl) bioEl.textContent = SETTINGS.barber_bio || '';
+    if (tagsEl && SETTINGS.barber_tags) {
+      tagsEl.innerHTML = SETTINGS.barber_tags.map(t => `<li>${t}</li>`).join('');
+    }
+  }
+
+  function renderBankInfo() {
+    const box = $('#transferBox');
+    const b = SETTINGS.bank_info || {};
+    if (!box) return;
+    box.innerHTML = `
+      <p><strong>Banco:</strong> ${b.bank || ''}</p>
+      <p><strong>Tipo de cuenta:</strong> ${b.accountType || ''}</p>
+      <p><strong>N° de cuenta:</strong> ${b.accountNumber || ''}</p>
+      <p><strong>Titular:</strong> ${b.holder || ''}</p>
+      <p><strong>RUT:</strong> ${b.rut || ''}</p>
+      <p><strong>Email confirmación:</strong> ${b.email || ''}</p>
+      <button class="btn btn--outline btn--sm" type="button" id="copyTransfer">📋 Copiar datos</button>
+    `;
+    $('#copyTransfer').addEventListener('click', () => {
+      const text = `Banco: ${b.bank}\nTipo de cuenta: ${b.accountType}\nN° cuenta: ${b.accountNumber}\nTitular: ${b.holder}\nRUT: ${b.rut}\nEmail: ${b.email}`;
+      navigator.clipboard.writeText(text).then(() => toast('Datos bancarios copiados 📋')).catch(() => toast('No se pudo copiar automáticamente, cópialos manualmente.'));
+    });
   }
 
   /* ------------------------------- Navbar ------------------------------- */
@@ -128,6 +210,8 @@
     state.payMethod = 'card';
     $('#contactForm').reset();
     $('#cardForm').reset();
+    $$('.option-card').forEach(c => c.classList.remove('is-selected'));
+    $('#toStep2').disabled = true;
     goToStep(1);
   }
 
@@ -151,9 +235,9 @@
     const wrap = $('#serviceOptions');
     wrap.innerHTML = SERVICES.map(s => `
       <div class="option-card" data-id="${s.id}">
-        <div style="font-size:1.4rem">${s.icon}</div>
+        <div style="font-size:1.4rem">${s.icon || '💈'}</div>
         <h4>${s.name}</h4>
-        <p>${s.desc}</p>
+        <p>${s.description}</p>
         <div class="option-card__foot"><b>${money(s.price)}</b><span>${s.duration} min</span></div>
       </div>
     `).join('');
@@ -170,7 +254,11 @@
   /* ------------------------------- Paso 2: Calendario ------------------------------- */
 
   function isClosedDay(date) {
-    return BUSINESS_HOURS.closedDays.includes(date.getDay());
+    return (SETTINGS.closed_days || []).includes(date.getDay());
+  }
+
+  function isBlocked(date) {
+    return BLOCKED_DATES.includes(toISODate(date));
   }
 
   function isPast(date) {
@@ -197,7 +285,7 @@
     for (let i = 0; i < firstDow; i++) cells += `<div class="calendar__day is-empty"></div>`;
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
-      const disabled = isClosedDay(date) || isPast(date) || isTooFar(date);
+      const disabled = isClosedDay(date) || isPast(date) || isTooFar(date) || isBlocked(date);
       const selected = state.date && toISODate(state.date) === toISODate(date);
       cells += `<div class="calendar__day ${disabled ? 'is-disabled' : ''} ${selected ? 'is-selected' : ''}" data-date="${toISODate(date)}">${d}</div>`;
     }
@@ -247,26 +335,38 @@
     return `${pad2(Math.floor(mins / 60))}:${pad2(mins % 60)}`;
   }
 
-  function getBookedRangesForDate(isoDate) {
-    return getBookings()
-      .filter(b => b.date === isoDate)
-      .map(b => {
+  async function getBookedRangesForDate(isoDate) {
+    if (!isSupabaseConfigured()) return [];
+    try {
+      const { data, error } = await supabaseClient.from('bookings_public').select('time,duration').eq('date', isoDate);
+      if (error) throw error;
+      return (data || []).map(b => {
         const start = timeToMinutes(b.time);
         return { start, end: start + b.duration };
       });
+    } catch (err) {
+      console.error('Error consultando disponibilidad:', err);
+      return [];
+    }
   }
 
-  function renderSlots() {
+  async function renderSlots() {
     const wrap = $('#slotsWrap');
     if (!state.date) {
       wrap.innerHTML = `<p class="slots-empty">Elige primero un día en el calendario.</p>`;
       return;
     }
+    wrap.innerHTML = `<p class="slots-empty">Cargando horarios disponibles…</p>`;
+
     const duration = state.service.duration;
     const iso = toISODate(state.date);
-    const booked = getBookedRangesForDate(iso);
-    const startMin = BUSINESS_HOURS.start * 60;
-    const endMin = BUSINESS_HOURS.end * 60;
+    const booked = await getBookedRangesForDate(iso);
+
+    // si el usuario ya cambió de fecha mientras esperábamos la respuesta, no pisar la UI
+    if (!state.date || toISODate(state.date) !== iso) return;
+
+    const startMin = (SETTINGS.start_hour ?? 10) * 60;
+    const endMin = (SETTINGS.end_hour ?? 19) * 60;
     const now = new Date();
     const isToday = toISODate(now) === iso;
     const nowMin = now.getHours() * 60 + now.getMinutes();
@@ -361,11 +461,6 @@
     cvvInput.addEventListener('input', () => {
       cvvInput.value = cvvInput.value.replace(/\D/g, '').slice(0, 4);
     });
-
-    $('#copyTransfer').addEventListener('click', () => {
-      const text = `Banco: ${BANK_INFO.bank}\nTipo de cuenta: ${BANK_INFO.accountType}\nN° cuenta: ${BANK_INFO.accountNumber}\nTitular: ${BANK_INFO.holder}\nRUT: ${BANK_INFO.rut}\nEmail: ${BANK_INFO.email}`;
-      navigator.clipboard.writeText(text).then(() => toast('Datos bancarios copiados 📋')).catch(() => toast('No se pudo copiar automáticamente, cópialos manualmente.'));
-    });
   }
 
   /* ------------------------------- ICS (calendario) ------------------------------- */
@@ -384,8 +479,8 @@
       `DTSTAMP:${fmt(new Date())}`,
       `DTSTART:${fmt(start)}`,
       `DTEND:${fmt(end)}`,
-      `SUMMARY:${booking.serviceName} — Mashita Barber`,
-      `DESCRIPTION:Reserva confirmada en Mashita Barber. Servicio: ${booking.serviceName}.`,
+      `SUMMARY:${booking.service_name} — Mashita Barber`,
+      `DESCRIPTION:Reserva confirmada en Mashita Barber. Servicio: ${booking.service_name}.`,
       'LOCATION:Av. Providencia 1234, Santiago',
       'END:VEVENT', 'END:VCALENDAR',
     ].join('\r\n');
@@ -401,7 +496,7 @@
 
   /* ------------------------------- Confirmación ------------------------------- */
 
-  function confirmBooking() {
+  async function confirmBooking() {
     const form = $('#contactForm');
     if (!form.reportValidity()) { goToStep(3); return; }
     const fd = new FormData(form);
@@ -421,46 +516,62 @@
     const amount = state.payMode === 'deposit' ? Math.round(price * 0.3) : price;
     const paid = state.payMethod === 'card';
 
-    const booking = {
-      id: 'B' + Date.now(),
-      serviceId: state.service.id,
-      serviceName: state.service.name,
+    const bookingPayload = {
+      service_id: state.service.id,
+      service_name: state.service.name,
       duration: state.service.duration,
       price,
-      amountPaid: paid ? amount : 0,
+      amount_paid: paid ? amount : 0,
       date: toISODate(state.date),
       time: state.time,
-      customerName: fd.get('name'),
+      customer_name: fd.get('name'),
       phone: fd.get('phone'),
       email: fd.get('email'),
       notes: fd.get('notes') || '',
       reminder: fd.get('reminder') === 'on',
-      payMode: state.payMode,
-      payMethod: state.payMethod,
-      paymentStatus: paid ? 'Pagado' : 'Pendiente de confirmación (transferencia)',
-      createdAt: new Date().toISOString(),
+      pay_mode: state.payMode,
+      pay_method: state.payMethod,
+      payment_status: paid ? 'Pagado' : 'Pendiente de confirmación (transferencia)',
+      status: 'confirmada',
     };
 
-    saveBooking(booking);
-    renderFinal(booking);
-    goToStep(5);
+    const confirmBtn = $('#confirmPay');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Procesando…';
+
+    let saved = { ...bookingPayload, id: 'local-' + Date.now(), created_at: new Date().toISOString() };
+    try {
+      if (isSupabaseConfigured()) {
+        const { data, error } = await supabaseClient.from('bookings').insert(bookingPayload).select().single();
+        if (error) throw error;
+        saved = data;
+      }
+      saveMyBooking(saved);
+      renderFinal(saved);
+      goToStep(5);
+    } catch (err) {
+      console.error('Error guardando la reserva:', err);
+      toast('No se pudo confirmar la reserva. Intenta de nuevo. ⚠️');
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirmar y pagar →';
+    }
   }
 
   function renderFinal(booking) {
     $('#finalSummary').innerHTML = `
-      <div><span>Servicio</span><span>${booking.serviceName}</span></div>
+      <div><span>Servicio</span><span>${booking.service_name}</span></div>
       <div><span>Fecha</span><span>${booking.date} · ${booking.time}</span></div>
-      <div><span>Cliente</span><span>${booking.customerName}</span></div>
-      <div><span>Estado de pago</span><span>${booking.paymentStatus}</span></div>
-      <div class="total"><span>Monto</span><span>${money(booking.amountPaid || 0)}</span></div>
+      <div><span>Cliente</span><span>${booking.customer_name}</span></div>
+      <div><span>Estado de pago</span><span>${booking.payment_status}</span></div>
+      <div class="total"><span>Monto</span><span>${money(booking.amount_paid || 0)}</span></div>
     `;
 
     const reminderBox = $('#reminderList');
     if (booking.reminder) {
       reminderBox.innerHTML = `
-        <div>📲 Recordatorio simulado: WhatsApp 24h antes de tu cita</div>
-        <div>📲 Recordatorio simulado: SMS 2h antes de tu cita</div>
-        <div style="font-size:.78rem;opacity:.7">Nota: en esta demo los recordatorios no se envían realmente. Para producción se requiere integrar una API como WhatsApp Business Cloud API, Twilio o similar.</div>
+        <div>📲 Recordatorio: el barbero podrá enviarte confirmación/recordatorio por WhatsApp desde el panel de administración.</div>
+        <div style="font-size:.78rem;opacity:.7">Nota: los recordatorios se envían manualmente por WhatsApp (no automáticos) para no depender de una API de pago (Twilio/WhatsApp Business).</div>
       `;
     } else {
       reminderBox.innerHTML = `<div>No solicitaste recordatorios para esta reserva.</div>`;
@@ -473,16 +584,16 @@
 
   function renderMisReservas() {
     const list = $('#reservasList');
-    const all = getBookings().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    const all = getMyBookings().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
     if (all.length === 0) {
-      list.innerHTML = `<p class="empty-state">Aún no tienes reservas en este navegador.</p>`;
+      list.innerHTML = `<p class="empty-state">Aún no tienes reservas hechas desde este navegador.</p>`;
       return;
     }
     list.innerHTML = all.map(b => `
       <div class="reserva-item">
-        <div><strong>${b.serviceName}</strong> — ${b.date} · ${b.time}</div>
-        <div>${b.customerName} · ${b.phone}</div>
-        <span class="reserva-item__status">${b.paymentStatus}</span>
+        <div><strong>${b.service_name}</strong> — ${b.date} · ${b.time}</div>
+        <div>${b.customer_name} · ${b.phone}</div>
+        <span class="reserva-item__status">${b.payment_status}</span>
       </div>
     `).join('');
   }
@@ -531,10 +642,13 @@
 
   /* ------------------------------- Init ------------------------------- */
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteData();
     renderServices();
     renderGallery();
     renderTestimonials();
+    renderBarberProfile();
+    renderBankInfo();
     renderServiceOptions();
     initPaymentControls();
     initWizardWiring();

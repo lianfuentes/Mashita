@@ -1,0 +1,83 @@
+.admin-body{min-height:100vh;}
+
+.admin-center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.admin-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;width:min(420px,100%);box-shadow:var(--shadow);}
+.admin-card h1{font-family:var(--font-display);font-size:1.5rem;margin:0 0 1.5rem;letter-spacing:.3px;}
+.admin-card p{color:var(--text-dim);font-size:.9rem;line-height:1.6;}
+.admin-card code{background:var(--surface-2);padding:.15rem .4rem;border-radius:4px;font-size:.85em;}
+.admin-login-brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-size:1.1rem;margin-bottom:2rem;}
+
+#loginForm{display:flex;flex-direction:column;gap:1rem;}
+#loginForm label{display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;color:var(--text-dim);}
+#loginForm input{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;color:var(--text);font-family:var(--font-body);font-size:.95rem;}
+#loginForm input:focus{outline:none;border-color:var(--accent);}
+.admin-error{color:#d97a7a;font-size:.85rem;background:rgba(138,31,31,.15);border:1px solid rgba(138,31,31,.4);border-radius:8px;padding:.6rem .8rem;}
+.admin-back-link{display:block;text-align:center;margin-top:1.5rem;color:var(--text-dim);font-size:.85rem;}
+.admin-back-link:hover{color:var(--accent);}
+
+/* Topbar */
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:var(--bg-alt);}
+.admin-topbar .brand{display:flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-size:1.1rem;}
+.admin-topbar__tag{background:var(--surface-2);color:var(--accent);font-family:var(--font-body);font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase;letter-spacing:1px;}
+.admin-topbar__actions{display:flex;gap:.8rem;}
+
+/* Tabs */
+.admin-tabs{display:flex;gap:.6rem;margin:1.5rem auto 0;flex-wrap:wrap;}
+.admin-tab{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:.7rem 1.3rem;border-radius:999px;font-weight:600;font-size:.9rem;cursor:pointer;}
+.admin-tab.is-active{background:var(--accent);color:#121214;border-color:var(--accent);}
+
+.admin-main{padding:2rem 0 4rem;}
+.admin-panel{display:none;}
+.admin-panel.is-active{display:block;}
+
+.admin-section-title{font-family:var(--font-display);font-size:1.3rem;margin:2rem 0 1rem;letter-spacing:.3px;}
+.admin-section-title:first-child{margin-top:0;}
+.admin-section-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.admin-section-head .admin-section-title{margin:0;}
+
+.admin-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;}
+.admin-form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;}
+.admin-form label{display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;color:var(--text-dim);}
+.admin-form input, .admin-form select, .admin-form textarea{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;color:var(--text);font-family:var(--font-body);font-size:.9rem;}
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus{outline:none;border-color:var(--accent);}
+.admin-form-label-block{display:block;font-size:.85rem;color:var(--text-dim);margin-bottom:.6rem;}
+.admin-form--inline{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;padding:1.2rem;}
+.admin-form--inline input{flex:1;min-width:140px;}
+
+.admin-days-grid{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.3rem;}
+.admin-day-toggle{display:flex;align-items:center;gap:.4rem;background:var(--surface-2);border:1px solid var(--border);padding:.5rem .9rem;border-radius:8px;font-size:.85rem;cursor:pointer;}
+
+.admin-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.6rem .9rem;color:var(--text);font-family:var(--font-body);}
+
+.admin-list{display:flex;flex-direction:column;gap:.8rem;}
+.admin-list-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;}
+.admin-list-empty{color:var(--text-dim);font-size:.9rem;text-align:center;padding:2rem 0;}
+
+/* Reservas */
+.booking-card{display:flex;flex-direction:column;gap:.8rem;}
+.booking-card__top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+.booking-card__title{font-weight:700;}
+.booking-card__title span{color:var(--accent);}
+.booking-card__meta{color:var(--text-dim);font-size:.85rem;}
+.booking-card__controls{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;}
+.booking-card__controls select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;color:var(--text);font-size:.82rem;}
+.booking-card__actions{display:flex;gap:.6rem;flex-wrap:wrap;}
+.booking-card__whatsapp-custom{display:none;gap:.6rem;margin-top:.6rem;}
+.booking-card__whatsapp-custom.is-open{display:flex;}
+.booking-card__whatsapp-custom textarea{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:.6rem;color:var(--text);font-family:var(--font-body);font-size:.85rem;}
+
+/* Fecha bloqueada */
+.blocked-date-item{display:flex;justify-content:space-between;align-items:center;}
+
+/* Fotos */
+.admin-photo-uploader{display:flex;align-items:center;gap:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;}
+.admin-photo-preview{width:110px;height:110px;border-radius:50%;object-fit:cover;background:var(--surface-2);flex-shrink:0;}
+.admin-services-photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;}
+.admin-service-photo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;text-align:center;}
+.admin-service-photo-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;margin-bottom:.8rem;background:var(--surface-2);}
+.admin-service-photo-card h4{margin:.2rem 0 .8rem;font-size:.95rem;}
+
+@media (max-width: 640px){
+  .admin-form-row{grid-template-columns:1fr;}
+  .admin-photo-uploader{flex-direction:column;text-align:center;}
+}
